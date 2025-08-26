@@ -22,14 +22,12 @@ dependencies:
   # --- UI & User Input ---
   camera: ^0.11.0+1
   image_picker: ^1.1.2
-  file_picker: ^10.3.2 # Excelファイル選択用
+  file_picker: ^8.0.0+1
 
   # --- Offline AI & OCR ---
-  # Googleのオンデバイス（オフライン）文字認識ライブラリ
   google_mlkit_text_recognition: ^0.15.0
   
-  # ★★★【変更点】★★★
-  # Google公式の最新オンデバイスAIライブラリ
+  # Google公式の最新オンデバイスAIフレームワーク
   google_mediapipe: ^0.1.1 
   
   # --- App Icon Generation ---
@@ -43,7 +41,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # --- AIモデルや画像アセットをアプリに含める設定 ---
   assets:
     - assets/
     # MediaPipeが使用するモデルファイルを置く場所

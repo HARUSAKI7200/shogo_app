@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'home_actions.dart';
-import '../widgets/home_widgets.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,7 +22,6 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = false;
   String? _currentProjectFolderPath;
 
-  // HomeActionsのインスタンス化
   late final HomeActions _actions;
 
   @override
@@ -31,9 +29,15 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _actions = HomeActions(
       context: context,
-      getState: () => this.mounted ? this : null,
+      getState: () => this,
       setState: (fn) { if(mounted) setState(fn); },
     );
+  }
+
+  @override
+  void dispose() {
+    _actions.dispose();
+    super.dispose();
   }
 
   @override
@@ -47,59 +51,58 @@ class _HomePageState extends State<HomePage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: buttonColumnWidth,
-                        child: _buildActionButton(label: '新規作成', onPressed: _actions.handleNewProject, icon: Icons.create_new_folder),
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: buttonColumnWidth,
-                    child: Row(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(child: _buildActionButton(label: '保存', onPressed: _actions.handleSaveProject, icon: Icons.save, isEnabled: _currentProjectFolderPath != null)),
-                        const SizedBox(width: 10),
-                        Expanded(child: _buildActionButton(label: '読み込み', onPressed: _actions.handleLoadProject, icon: Icons.folder_open)),
+                        SizedBox(
+                          width: buttonColumnWidth,
+                          child: _buildActionButton(label: '新規作成', onPressed: _actions.handleNewProject, icon: Icons.create_new_folder),
+                        ),
+                        const Spacer(),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: buttonColumnWidth,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        // --- 荷札処理セクション ---
-                        _buildSectionHeader("荷札データ"),
-                        _buildActionButton(label: '荷札を撮影して抽出 (オフライン)', onPressed: _actions.handleCaptureNifudaOffline, icon: Icons.camera_alt_outlined, isEnabled: _currentProjectFolderPath != null, isEmphasized: true),
-                        const SizedBox(height: 10),
-                        _buildActionButton(label: '荷札リスト (${_nifudaData.length > 1 ? _nifudaData.length - 1 : 0}件)', onPressed: _actions.handleShowNifudaList, icon: Icons.list_alt_rounded, isEnabled: _nifudaData.length > 1 && _currentProjectFolderPath != null),
-                        const SizedBox(height: 20),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: buttonColumnWidth,
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildActionButton(label: '保存', onPressed: _actions.handleSaveProject, icon: Icons.save, isEnabled: _currentProjectFolderPath != null)),
+                          const SizedBox(width: 10),
+                          Expanded(child: _buildActionButton(label: '読み込み', onPressed: _actions.handleLoadProject, icon: Icons.folder_open)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: buttonColumnWidth,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          _buildSectionHeader("荷札データ"),
+                          _buildActionButton(label: '荷札を撮影して抽出 (オフライン)', onPressed: _actions.handleCaptureNifudaOffline, icon: Icons.camera_alt_outlined, isEnabled: _currentProjectFolderPath != null, isEmphasized: true),
+                          const SizedBox(height: 10),
+                          _buildActionButton(label: '荷札リスト (${_nifudaData.length > 1 ? _nifudaData.length - 1 : 0}件)', onPressed: _actions.handleShowNifudaList, icon: Icons.list_alt_rounded, isEnabled: _nifudaData.length > 1 && _currentProjectFolderPath != null),
+                          const SizedBox(height: 20),
 
-                        // --- 製品リスト処理セクション ---
-                        _buildSectionHeader("製品リストデータ"),
-                        _buildActionButton(label: 'Excelファイルから製品リストを読込', onPressed: _actions.handleLoadProductListFromExcel, icon: Icons.file_upload, isEnabled: _currentProjectFolderPath != null),
-                        const SizedBox(height: 10),
-                        _buildActionButton(label: '製品リスト (${_productListKariData.length > 1 ? _productListKariData.length - 1 : 0}件)', onPressed: _actions.handleShowProductList, icon: Icons.inventory_2_outlined, isEnabled: _productListKariData.length > 1 && _currentProjectFolderPath != null),
-                        const SizedBox(height: 20),
-                        
-                        // --- 照合処理セクション ---
-                         _buildSectionHeader("照合処理"),
-                        _buildMatchingPatternSelector(),
-                        const SizedBox(height: 10),
-                        _buildActionButton(label: '照合を開始する', onPressed: _actions.handleStartMatching, icon: Icons.compare_arrows_rounded, isEnabled: _nifudaData.length > 1 && _productListKariData.length > 1 && _currentProjectFolderPath != null, isEmphasized: true),
-                      ],
+                          _buildSectionHeader("製品リストデータ"),
+                          _buildActionButton(label: 'Excelファイルから製品リストを読込', onPressed: _actions.handleLoadProductListFromExcel, icon: Icons.file_upload, isEnabled: _currentProjectFolderPath != null),
+                          const SizedBox(height: 10),
+                          _buildActionButton(label: '製品リスト (${_productListKariData.length > 1 ? _productListKariData.length - 1 : 0}件)', onPressed: _actions.handleShowProductList, icon: Icons.inventory_2_outlined, isEnabled: _productListKariData.length > 1 && _currentProjectFolderPath != null),
+                          const SizedBox(height: 20),
+                          
+                           _buildSectionHeader("照合処理"),
+                          _buildMatchingPatternSelector(),
+                          const SizedBox(height: 10),
+                          _buildActionButton(label: '照合を開始する', onPressed: _actions.handleStartMatching, icon: Icons.compare_arrows_rounded, isEnabled: _nifudaData.length > 1 && _productListKariData.length > 1 && _currentProjectFolderPath != null, isEmphasized: true),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             if (_isLoading)
@@ -112,9 +115,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  // --- Widgets (UI部品) ---
-  // (ここは既存のコードから変更なし。ただし、不要なものは削除)
 
   Widget _buildActionButton({
     required String label, required IconData icon, required VoidCallback? onPressed,
