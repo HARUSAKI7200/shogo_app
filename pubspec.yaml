@@ -28,10 +28,9 @@ dependencies:
   # Googleのオンデバイス（オフライン）文字認識ライブラリ
   google_mlkit_text_recognition: ^0.15.0
   
-  # オンデバイスAIモデルを実行するためのライブラリ（TensorFlow Lite）
-  # 将来的に軽量LLMを動かすための基盤
-  tflite_flutter: ^0.10.4
-  tflite_flutter_helper: ^0.4.4
+  # ★★★【変更点】★★★
+  # Google公式の最新オンデバイスAIライブラリ
+  google_mediapipe: ^0.1.1 
   
   # --- App Icon Generation ---
   flutter_launcher_icons: ^0.13.1
@@ -47,7 +46,7 @@ flutter:
   # --- AIモデルや画像アセットをアプリに含める設定 ---
   assets:
     - assets/
-    # 将来オンデバイスAIのモデルファイルを置く場所
+    # MediaPipeが使用するモデルファイルを置く場所
     - assets/models/ 
     - assets/icon/
 
