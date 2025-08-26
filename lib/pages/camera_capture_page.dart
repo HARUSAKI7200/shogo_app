@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import '../widgets/custom_snackbar.dart';
+import 'package:shogo_app/widgets/custom_snackbar.dart';
 
 class CameraCapturePage extends StatefulWidget {
   final String overlayText;
@@ -42,9 +42,11 @@ class _CameraCapturePageState extends State<CameraCapturePage> with WidgetsBindi
   
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (!_isCameraInitialized || _controller == null || !_controller!.value.isInitialized) return;
+    final cameraController = _controller;
+    if (cameraController == null || !cameraController.value.isInitialized) return;
+
     if (state == AppLifecycleState.inactive) {
-      _controller?.dispose();
+      cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
       _initCamera();
     }
@@ -78,11 +80,10 @@ class _CameraCapturePageState extends State<CameraCapturePage> with WidgetsBindi
 
     try {
       final XFile imageFile = await _controller!.takePicture();
-      // ここでクロップ等の画像処理を追加することも可能
       final bytesForProcessing = await imageFile.readAsBytes();
 
       _capturedImages.add(bytesForProcessing);
-      setState(() {}); // UIのカウントを更新
+      setState(() {});
       showCustomSnackBar(context, '${_capturedImages.length} 枚目の画像をキャプチャしました。', showAtTop: true);
 
     } catch (e) {
@@ -100,12 +101,12 @@ class _CameraCapturePageState extends State<CameraCapturePage> with WidgetsBindi
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('荷札の連続撮影 (${_capturedImages.length} 枚)')),
-      body: _isCameraInitialized
+      body: _isCameraInitialized && _controller != null
           ? CameraPreview(_controller!)
           : const Center(child: CircularProgressIndicator()),
       bottomNavigationBar: Container(
         color: Colors.black.withOpacity(0.5),
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal:16.0, vertical: 24.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

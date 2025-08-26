@@ -1,17 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
-import 'dart:convert';
-
-import '../services/offline_ai_service.dart';
-import '../services/excel_service.dart';
-import '../utils/product_matcher.dart';
-import 'camera_capture_page.dart';
-import 'nifuda_ocr_confirm_page.dart';
-import 'matching_result_page.dart';
-import '../widgets/excel_preview_dialog.dart';
-import '../widgets/custom_snackbar.dart';
+import 'package:shogo_app/pages/camera_capture_page.dart';
+import 'package:shogo_app/pages/matching_result_page.dart';
+import 'package:shogo_app/pages/nifuda_ocr_confirm_page.dart';
+import 'package:shogo_app/services/excel_service.dart';
+import 'package:shogo_app/services/offline_ai_service.dart';
+import 'package:shogo_app/utils/product_matcher.dart';
+import 'package:shogo_app/widgets/custom_snackbar.dart';
+import 'package:shogo_app/widgets/excel_preview_dialog.dart';
 
 class HomeActions {
   final BuildContext context;
@@ -21,9 +20,7 @@ class HomeActions {
   final OfflineAiService _aiService;
 
   HomeActions({required this.context, required this.getState, required this.setState})
-      : _aiService = OfflineAiService() {
-    _aiService.initialize();
-  }
+      : _aiService = OfflineAiService();
   
   void dispose() {
     _aiService.dispose();
@@ -105,9 +102,10 @@ class HomeActions {
   }
 
   Future<void> handleLoadProject() async {
-    if (_isLoading) return;
+     if (_isLoading) return;
     _setLoading(true);
-    // (この部分は既存のロジックから変更なし)
+    await Future.delayed(const Duration(seconds: 1));
+    showCustomSnackBar(context, '読み込み機能は現在開発中です。');
     _setLoading(false);
   }
 
@@ -120,6 +118,8 @@ class HomeActions {
     _setLoading(true);
 
     try {
+      await _aiService.initialize();
+      
       final List<Uint8List>? capturedImages = await Navigator.push<List<Uint8List>>(
         context,
         MaterialPageRoute(builder: (_) => CameraCapturePage(
@@ -130,6 +130,7 @@ class HomeActions {
 
       if (capturedImages == null || capturedImages.isEmpty) {
         showCustomSnackBar(context, '荷札の撮影がキャンセルされました。');
+        _setLoading(false);
         return;
       }
 
@@ -138,11 +139,14 @@ class HomeActions {
       final List<Map<String, dynamic>> allAiResults = [];
       for (final imageBytes in capturedImages) {
         final result = await _aiService.processNifudaImage(imageBytes);
-        if (result.isNotEmpty) allAiResults.add(result);
+        if (result.isNotEmpty && result.values.any((v) => v.toString().isNotEmpty)) {
+           allAiResults.add(result);
+        }
       }
 
       if (allAiResults.isEmpty) {
         showCustomSnackBar(context, 'どの画像からも有効なデータを抽出できませんでした。', isError: true);
+        _setLoading(false);
         return;
       }
       
@@ -168,6 +172,7 @@ class HomeActions {
       final filePath = await excelService.pickExcelFile();
       if (filePath == null) {
         showCustomSnackBar(context, 'ファイル選択がキャンセルされました。');
+        _setLoading(false);
         return;
       }
 
@@ -187,7 +192,7 @@ class HomeActions {
   }
 
   void handleShowNifudaList() {
-    if (_nifudaData.length <= 1) return;
+    if (_nifudaData.length <= 1 || _currentProjectFolderPath == null) return;
     showDialog(context: context, builder: (_) => ExcelPreviewDialog(
         title: '荷札リスト', data: _nifudaData, headers: _nifudaData.first,
         projectFolderPath: _currentProjectFolderPath!, subfolder: '荷札リスト',
@@ -195,7 +200,7 @@ class HomeActions {
   }
   
   void handleShowProductList() {
-     if (_productListKariData.length <= 1) return;
+     if (_productListKariData.length <= 1 || _currentProjectFolderPath == null) return;
      showDialog(context: context, builder: (_) => ExcelPreviewDialog(
         title: '製品リスト', data: _productListKariData, headers: _productListKariData.first,
         projectFolderPath: _currentProjectFolderPath!, subfolder: '製品リスト',

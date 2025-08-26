@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shogo_app/pages/home_page.dart';
 
 void main() {
-  // アプリがクラッシュしないように、Flutterの初期化を保証する
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }

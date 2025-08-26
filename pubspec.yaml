@@ -27,11 +27,12 @@ dependencies:
   # --- Offline AI & OCR ---
   google_mlkit_text_recognition: ^0.15.0
   
-  # Google公式の最新オンデバイスAIフレームワーク
-  google_mediapipe: ^0.1.1 
+  # ★★★【変更点】★★★
+  # 確実に動作するバージョンの組み合わせに修正しました
+  tflite_flutter: ^0.11.0
   
-  # --- App Icon Generation ---
   flutter_launcher_icons: ^0.13.1
+  cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
@@ -43,15 +44,15 @@ flutter:
 
   assets:
     - assets/
-    # MediaPipeが使用するモデルファイルを置く場所
     - assets/models/ 
     - assets/icon/
+    - assets/fonts/
 
   fonts:
    - family: NotoSansJP
      fonts:
-       - asset: fonts/NotoSansJP-Regular.ttf
-       - asset: fonts/NotoSansJP-Bold.ttf
+       - asset: assets/fonts/NotoSansJP-Regular.ttf
+       - asset: assets/fonts/NotoSansJP-Bold.ttf
          weight: 700
 
 flutter_launcher_icons:

@@ -87,13 +87,11 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(height: 10),
                           _buildActionButton(label: '荷札リスト (${_nifudaData.length > 1 ? _nifudaData.length - 1 : 0}件)', onPressed: _actions.handleShowNifudaList, icon: Icons.list_alt_rounded, isEnabled: _nifudaData.length > 1 && _currentProjectFolderPath != null),
                           const SizedBox(height: 20),
-
                           _buildSectionHeader("製品リストデータ"),
                           _buildActionButton(label: 'Excelファイルから製品リストを読込', onPressed: _actions.handleLoadProductListFromExcel, icon: Icons.file_upload, isEnabled: _currentProjectFolderPath != null),
                           const SizedBox(height: 10),
                           _buildActionButton(label: '製品リスト (${_productListKariData.length > 1 ? _productListKariData.length - 1 : 0}件)', onPressed: _actions.handleShowProductList, icon: Icons.inventory_2_outlined, isEnabled: _productListKariData.length > 1 && _currentProjectFolderPath != null),
                           const SizedBox(height: 20),
-                          
                            _buildSectionHeader("照合処理"),
                           _buildMatchingPatternSelector(),
                           const SizedBox(height: 10),
